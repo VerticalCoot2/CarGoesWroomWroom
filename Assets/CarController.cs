@@ -32,9 +32,9 @@ public class CarController : MonoBehaviour
         }
 
 
-        acceleration = 1000;
-        breakForce = 1000;
-        maxTurningAngle = 40;
+        acceleration = 500;
+        breakForce = 5000;
+        maxTurningAngle = 30;
     }
     void Start()
     {
@@ -51,19 +51,47 @@ public class CarController : MonoBehaviour
         for(int i =0; i < 2; i++)
         {
             wheelCol[i].steerAngle = curTurningAngle;
+            
+            wheelCol[i].motorTorque = curAcceleration;
 
         }
         for (int i = 2; i < 4; i++)
         {
             wheelCol[i].steerAngle = -curTurningAngle/10;
         }
-        
-        
+
+        for (int i = 0; i < wheelCol.Count; i++)
+        {
+            wheelCol[i].brakeTorque = curBreakForce;
+        }
+
+        for (int i = 0; i < wheelMesh.Count; i++)
+        {
+            Vector3 wheelPos;
+            Quaternion wheelRot;
+            wheelCol[i].GetWorldPose(out wheelPos, out wheelRot);
+
+            wheelMesh[i].position = wheelPos;
+            wheelMesh[i].rotation = wheelRot;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    [SerializeField] uint checkpoints = 0;
+    private void OnTriggerEnter(Collider other)
+    {
+        switch(other.tag)
+        {
+            case "Respawn":
+                Debug.Log("checkpoint+1");
+                checkpoints++;
+                if (checkpoints == 5) Debug.Log("Winner-Winner Turkey-dinner");
+                break;
+        }
     }
 }
